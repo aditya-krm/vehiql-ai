@@ -38,6 +38,7 @@ export function CarDetails({ car, testDriveInfo }) {
   const { isSignedIn } = useAuth();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isWishlisted, setIsWishlisted] = useState(car.wishlisted);
+  const [showAuthAlert, setShowAuthAlert] = useState(!isSignedIn && testDriveInfo?.isAuthenticated === false);
 
   const {
     loading: savingCar,
@@ -110,6 +111,22 @@ export function CarDetails({ car, testDriveInfo }) {
 
   return (
     <div>
+      {/* Authentication Alert for non-authenticated users */}
+      {showAuthAlert && (
+        <Alert className="mb-6" variant="warning">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Sign in required</AlertTitle>
+          <AlertDescription>
+            Please sign in to access all features including booking test drives and saving cars.
+            <div className="mt-2">
+              <Button onClick={() => router.push('/sign-in')} size="sm">
+                Sign In
+              </Button>
+            </div>
+          </AlertDescription>
+        </Alert>
+      )}
+      
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Image Gallery */}
         <div className="w-full lg:w-7/12">

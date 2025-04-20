@@ -302,25 +302,27 @@ export async function getCarById(carId) {
     }
 
     // Check if user has already booked a test drive for this car
-    const existingTestDrive = await db.testDriveBooking.findFirst({
-      where: {
-        carId,
-        userId: dbUser.id,
-        status: { in: ["PENDING", "CONFIRMED", "COMPLETED"] },
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
-
     let userTestDrive = null;
+    
+    if (dbUser) {
+      const existingTestDrive = await db.testDriveBooking.findFirst({
+        where: {
+          carId,
+          userId: dbUser.id,
+          status: { in: ["PENDING", "CONFIRMED", "COMPLETED"] },
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
 
-    if (existingTestDrive) {
-      userTestDrive = {
-        id: existingTestDrive.id,
-        status: existingTestDrive.status,
-        bookingDate: existingTestDrive.bookingDate.toISOString(),
-      };
+      if (existingTestDrive) {
+        userTestDrive = {
+          id: existingTestDrive.id,
+          status: existingTestDrive.status,
+          bookingDate: existingTestDrive.bookingDate.toISOString(),
+        };
+      }
     }
 
     // Get dealership info for test drive availability
@@ -348,6 +350,7 @@ export async function getCarById(carId) {
                 })),
               }
             : null,
+          isAuthenticated: !!dbUser,
         },
       },
     };
